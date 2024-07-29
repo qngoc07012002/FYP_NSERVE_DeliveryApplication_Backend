@@ -1,4 +1,4 @@
-@DeliveryApplication_Backend_ASPNetCore_HostAddress = http://localhost:5279
+@DeliveryApplication_Backend_ASPNetCore_HostAddress = http://localhost:5252
 
 GET {{DeliveryApplication_Backend_ASPNetCore_HostAddress}}/weatherforecast/
 Accept: application/json

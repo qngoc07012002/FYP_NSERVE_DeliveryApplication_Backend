@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryApplication_Backend_ASPNetCore", "DeliveryApplication_Backend_ASPNetCore.csproj", "{35173A25-698C-4F38-A4D2-53DB3479E217}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeliveryApplication_Backend_ASPNetCore", "DeliveryApplication_Backend_ASPNetCore.csproj", "{BFFAC297-FCA5-47E8-8FB0-4CC9DBE22987}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{35173A25-698C-4F38-A4D2-53DB3479E217}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{35173A25-698C-4F38-A4D2-53DB3479E217}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{35173A25-698C-4F38-A4D2-53DB3479E217}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{35173A25-698C-4F38-A4D2-53DB3479E217}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFFAC297-FCA5-47E8-8FB0-4CC9DBE22987}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFFAC297-FCA5-47E8-8FB0-4CC9DBE22987}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFFAC297-FCA5-47E8-8FB0-4CC9DBE22987}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFFAC297-FCA5-47E8-8FB0-4CC9DBE22987}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B644ED28-C8BC-4CBA-8A9B-32CBB6733FE6}
+		SolutionGuid = {471D9B13-DFB2-4224-93CE-B461F050C2D7}
 	EndGlobalSection
 EndGlobal
