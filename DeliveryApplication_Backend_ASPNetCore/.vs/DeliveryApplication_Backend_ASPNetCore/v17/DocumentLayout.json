@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Github\\FYP_NSERVE_DeliveryApplication_Backend\\DeliveryApplication_Backend_ASPNetCore\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{35173A25-698C-4F38-A4D2-53DB3479E217}|DeliveryApplication_Backend_ASPNetCore.csproj|d:\\github\\fyp_nserve_deliveryapplication_backend\\deliveryapplication_backend_aspnetcore\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{35173A25-698C-4F38-A4D2-53DB3479E217}|DeliveryApplication_Backend_ASPNetCore.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Github\\FYP_NSERVE_DeliveryApplication_Backend\\DeliveryApplication_Backend_ASPNetCore\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\Github\\FYP_NSERVE_DeliveryApplication_Backend\\DeliveryApplication_Backend_ASPNetCore\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAAaAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-29T14:28:58.497Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
