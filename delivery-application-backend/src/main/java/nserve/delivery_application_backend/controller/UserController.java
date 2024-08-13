@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import nserve.delivery_application_backend.dto.request.UserCreationRequest;
+import nserve.delivery_application_backend.dto.request.UserUpdateRequest;
 import nserve.delivery_application_backend.dto.response.ApiResponse;
 import nserve.delivery_application_backend.dto.response.UserResponse;
 import nserve.delivery_application_backend.entity.User;

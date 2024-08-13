@@ -6,6 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import nserve.delivery_application_backend.entity.Role;
+
+import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -19,5 +23,5 @@ public class UserUpdateRequest {
     String password;
     String email;
     String address;
-
+    List<String> roles;
 }
