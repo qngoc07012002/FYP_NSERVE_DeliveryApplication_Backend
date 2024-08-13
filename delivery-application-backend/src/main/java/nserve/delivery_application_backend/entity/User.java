@@ -18,9 +18,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
     String name;
-    String email;
-    String password;
     String phone;
+    String password;
+    String email;
     String address;
     @OneToMany
     Set<Role> roles;
