@@ -1,8 +1,9 @@
 package nserve.delivery_application_backend.configuration;
 
 import com.nimbusds.jose.JOSEException;
-import com.qngoc.identity_service.dto.request.IntrospectRequest;
-import com.qngoc.identity_service.service.AuthenticationService;
+
+import nserve.delivery_application_backend.dto.request.IntrospectRequest;
+import nserve.delivery_application_backend.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
