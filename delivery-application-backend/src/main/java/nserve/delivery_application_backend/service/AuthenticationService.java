@@ -58,7 +58,7 @@ public class AuthenticationService {
     protected long REFRESHABLE_DURATION;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        var user = userRepository.findByUsername(request.getUsername())
+        var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
@@ -124,9 +124,9 @@ public class AuthenticationService {
 
         invalidatedTokenRepository.save(invalidatedToken);
 
-        var userName = signJWT.getJWTClaimsSet().getSubject();
+        var email = signJWT.getJWTClaimsSet().getSubject();
 
-        var user = userRepository.findByUsername(userName)
+        var user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         var token = generateToken(user);
