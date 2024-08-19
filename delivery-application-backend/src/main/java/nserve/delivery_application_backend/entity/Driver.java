@@ -19,7 +19,5 @@ public class Driver {
     String name;
     String address;
 
-    @ManyToOne
-    @JoinColumn(name ="owner_id")
-    User owner;
+ 
 }
