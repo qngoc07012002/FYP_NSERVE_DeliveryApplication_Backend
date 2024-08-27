@@ -17,7 +17,7 @@ public class Food {
     String id;
 
     String name;
-    String address;
+    String category;
 
 
 }
