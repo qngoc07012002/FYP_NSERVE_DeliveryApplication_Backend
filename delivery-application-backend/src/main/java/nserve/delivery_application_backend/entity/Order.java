@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @Builder
@@ -24,7 +26,10 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "driver_id")
     Driver driver;
-    String address;
+    String orderStatus;
+    float totalPrice;
+    Date createAt;
+    Date updateAt;
 
 
 }
