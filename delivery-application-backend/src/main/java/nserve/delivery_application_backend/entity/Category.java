@@ -11,17 +11,11 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Food {
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-    Cateog
-    @ManyToOne
-    @JoinColumn(name = "restaurant_id")
-    Restaurant restaurant;
     String name;
-    String description;
-    float price;
 
 
 
