@@ -15,9 +15,9 @@ public class Driver {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-
-    String name;
-    String address;
-
-
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
+    String vehicleType;
+    String vehicleNumber;
 }
