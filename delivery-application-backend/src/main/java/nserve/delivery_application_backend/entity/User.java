@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
 import java.util.Set;
 
 @Getter
@@ -17,11 +18,13 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-    String name;
-    String phone;
-    String password;
+    String phoneNumber;
     String email;
-    String address;
+    String password;
+    String fullName;
+    String regionId;
+    Date createAt;
+    Date updateAt;
     @OneToMany
     Set<Role> roles;
 
