@@ -19,5 +19,5 @@ public class Driver {
     @JoinColumn(name = "user_id")
     User user;
     String vehicleType;
-    String vehicleNumber;
+    String licensePlate;
 }
