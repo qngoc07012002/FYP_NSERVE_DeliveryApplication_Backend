@@ -15,11 +15,11 @@ public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-
-    String name;
-    String address;
-
     @ManyToOne
     @JoinColumn(name ="owner_id")
     User owner;
+    String restaurantName;
+    String address;
+    float rating;
+
 }

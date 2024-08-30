@@ -1,9 +1,6 @@
 package nserve.delivery_application_backend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,8 +15,15 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-
-    String name;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id")
+    Restaurant restaurant;
+    @ManyToOne
+    @JoinColumn(name = "driver_id")
+    Driver driver;
     String address;
 
 
