@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @Builder
@@ -18,4 +20,10 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     Restaurant restaurant;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
+    int rating;
+    String comment;
+    Date createAt;
 }
