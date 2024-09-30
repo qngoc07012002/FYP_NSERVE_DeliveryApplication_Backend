@@ -28,15 +28,16 @@ public class SecurityConfig {
             "/auth/login",
             "/auth/introspect",
             "/auth/logout",
-            "/auth/refresh"
+            "/auth/refresh",
+            "/auth/generateOTP",
+            "/auth/verifyOTP"
     };
 
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-
+                request.requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(
