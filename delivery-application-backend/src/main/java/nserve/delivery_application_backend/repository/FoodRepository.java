@@ -10,7 +10,5 @@ import java.util.Optional;
 @Repository
 public interface FoodRepository extends JpaRepository<Food, String> {
 
-    boolean existsByEmail(String email);
 
-    Optional<User> findByEmail(String email);
 }

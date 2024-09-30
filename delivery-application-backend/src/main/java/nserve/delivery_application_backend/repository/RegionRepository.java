@@ -10,7 +10,5 @@ import java.util.Optional;
 @Repository
 public interface RegionRepository extends JpaRepository<Region, String> {
 
-    boolean existsByEmail(String email);
 
-    Optional<User> findByEmail(String email);
 }

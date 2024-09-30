@@ -10,7 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, String> {
 
-    boolean existsByEmail(String email);
 
-    Optional<User> findByEmail(String email);
 }
