@@ -16,7 +16,7 @@ public enum ErrorCode {
     LAST_NAME_INVALID(1006, "Last name must be at least 2 characters", HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(1007, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1008, "Unauthorized", HttpStatus.FORBIDDEN),
-
+    PHONE_INVALID(1009, "Phone number is invalid", HttpStatus.BAD_REQUEST),
     ;
     private int code;
     private String message;

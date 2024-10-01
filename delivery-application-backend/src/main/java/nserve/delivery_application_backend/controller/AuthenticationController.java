@@ -14,6 +14,7 @@ import nserve.delivery_application_backend.dto.response.AuthenticationResponse;
 import nserve.delivery_application_backend.dto.response.IntrospectResponse;
 import nserve.delivery_application_backend.dto.response.SMSResponse;
 import nserve.delivery_application_backend.service.AuthenticationService;
+import nserve.delivery_application_backend.service.SMSService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ import java.time.LocalDateTime;
 @Slf4j
 public class AuthenticationController {
     AuthenticationService authenticationService;
-
+    SMSService smsService;
     @PostMapping("/login")
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
@@ -39,44 +40,20 @@ public class AuthenticationController {
     }
 
     @PostMapping("/generateOTP")
-    ResponseEntity<String> sendSMS(@RequestBody SMSRequest request) {
+    ApiResponse<SMSResponse> sendSMS(@RequestBody SMSRequest request) {
+        var result = smsService.sendOTP(request.getPhoneNumber());
 
-        Twilio.init("AC587ce38083646e33a9818d3ce6f3d6b7", "2b51292c820f170e88c18e28283b7735");
-
-        Verification verification = Verification.creator(
-                        "VA6a5cc2cac450c9e45350b856337ac19e", // this is your verification sid
-                        request.getPhoneNumber(),
-                        "sms")
-                .create();
-
-        System.out.println(verification.getStatus());
-
-        log.info("OTP has been successfully generated, and awaits your verification {}", LocalDateTime.now());
-
-        return new ResponseEntity<>("Message sent successfully", HttpStatus.OK);
+        return ApiResponse.<SMSResponse>builder()
+                .result(result)
+                .build();
     }
 
     @PostMapping("/verifyOTP")
-    ResponseEntity<String> verifyOTP(@RequestBody SMSRequest request) {
-
-        Twilio.init("AC587ce38083646e33a9818d3ce6f3d6b7", "2b51292c820f170e88c18e28283b7735");
-
-        try {
-
-            VerificationCheck verificationCheck = VerificationCheck.creator(
-                            "VA6a5cc2cac450c9e45350b856337ac19e", request.getOtp()) // pass verification SID here
-                    .setTo(request.getPhoneNumber())// pass generated OTP here
-                    .create();
-
-            if ("approved".equals(verificationCheck.getStatus())) {
-                return new ResponseEntity<>("Verification successful", HttpStatus.OK);
-            }
-            System.out.println(verificationCheck.getStatus());
-            return new ResponseEntity<>("Verification failed.", HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Verification failed.", HttpStatus.BAD_REQUEST);
-        }
-
+    ApiResponse<SMSResponse> verifyOTP(@RequestBody SMSRequest request) {
+        var result = smsService.verifyOTP(request.getPhoneNumber(), request.getOtp());
+        return ApiResponse.<SMSResponse>builder()
+                .result(result)
+                .build();
     }
 
 
