@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 public class SMSService {
     UserRepository userRepository;
     public SMSResponse sendOTP(String phoneNumber) {
-        if (userRepository.existsByPhoneNumber(phoneNumber)) throw new AppException(ErrorCode.PHONE_INVALID);
+        if (!userRepository.existsByPhoneNumber(phoneNumber)) throw new AppException(ErrorCode.PHONE_INVALID);
 
         Twilio.init("AC587ce38083646e33a9818d3ce6f3d6b7", "2b51292c820f170e88c18e28283b7735");
 
