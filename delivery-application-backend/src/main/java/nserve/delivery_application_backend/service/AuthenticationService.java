@@ -6,6 +6,9 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
+import com.twilio.Twilio;
+import com.twilio.rest.verify.v2.service.Verification;
+import com.twilio.rest.verify.v2.service.VerificationCheck;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -16,6 +19,7 @@ import nserve.delivery_application_backend.dto.request.LogoutRequest;
 import nserve.delivery_application_backend.dto.request.RefreshRequest;
 import nserve.delivery_application_backend.dto.response.AuthenticationResponse;
 import nserve.delivery_application_backend.dto.response.IntrospectResponse;
+import nserve.delivery_application_backend.dto.response.SMSResponse;
 import nserve.delivery_application_backend.entity.InvalidatedToken;
 import nserve.delivery_application_backend.entity.User;
 import nserve.delivery_application_backend.exception.AppException;
@@ -30,6 +34,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
@@ -56,6 +61,52 @@ public class AuthenticationService {
     @NonFinal
     @Value("${jwt.refreshable-duration}")
     protected long REFRESHABLE_DURATION;
+
+    public SMSResponse sendOTP(String phoneNumber) {
+        if (!userRepository.existsByPhoneNumber(phoneNumber)) throw new AppException(ErrorCode.USER_NOT_FOUND);
+
+        Twilio.init("AC587ce38083646e33a9818d3ce6f3d6b7", "2b51292c820f170e88c18e28283b7735");
+
+        Verification verification = Verification.creator(
+                        "VA6a5cc2cac450c9e45350b856337ac19e",
+                        phoneNumber,
+                        "sms")
+                .create();
+
+        System.out.println(verification.getStatus());
+
+        log.info("OTP has been successfully generated, and awaits your verification {}", LocalDateTime.now());
+
+        SMSResponse smsResponse = new SMSResponse();
+        smsResponse.setStatus(verification.getStatus());
+        return smsResponse;
+    }
+
+    public SMSResponse verifyOTP(String phoneNumber, String otp){
+        Twilio.init("AC587ce38083646e33a9818d3ce6f3d6b7", "2b51292c820f170e88c18e28283b7735");
+
+        try {
+            var user = userRepository.findByPhoneNumber(phoneNumber)
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+            VerificationCheck verificationCheck = VerificationCheck.creator(
+                            "VA6a5cc2cac450c9e45350b856337ac19e",otp)
+                    .setTo(phoneNumber)
+                    .create();
+
+            SMSResponse smsResponse = new SMSResponse();
+            smsResponse.setStatus(verificationCheck.getStatus());
+            if (verificationCheck.getStatus().equals("approved")) {
+                var token = generateToken(user);
+                smsResponse.setToken(token);
+            }
+            return smsResponse;
+
+        } catch (Exception e) {
+            SMSResponse smsResponse = new SMSResponse();
+            smsResponse.setStatus("decline");
+            return smsResponse;
+        }
+    }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByEmail(request.getEmail())

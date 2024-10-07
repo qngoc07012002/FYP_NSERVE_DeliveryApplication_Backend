@@ -1,10 +1,6 @@
 package nserve.delivery_application_backend.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.twilio.Twilio;
-import com.twilio.rest.verify.v2.service.Verification;
-import com.twilio.rest.verify.v2.service.VerificationCheck;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -14,13 +10,9 @@ import nserve.delivery_application_backend.dto.response.AuthenticationResponse;
 import nserve.delivery_application_backend.dto.response.IntrospectResponse;
 import nserve.delivery_application_backend.dto.response.SMSResponse;
 import nserve.delivery_application_backend.service.AuthenticationService;
-import nserve.delivery_application_backend.service.SMSService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
-import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/auth")
@@ -29,7 +21,7 @@ import java.time.LocalDateTime;
 @Slf4j
 public class AuthenticationController {
     AuthenticationService authenticationService;
-    SMSService smsService;
+   
     @PostMapping("/login")
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
@@ -41,7 +33,7 @@ public class AuthenticationController {
 
     @PostMapping("/generateOTP")
     ApiResponse<SMSResponse> sendSMS(@RequestBody SMSRequest request) {
-        var result = smsService.sendOTP(request.getPhoneNumber());
+        var result = authenticationService.sendOTP(request.getPhoneNumber());
 
         return ApiResponse.<SMSResponse>builder()
                 .result(result)
@@ -50,7 +42,7 @@ public class AuthenticationController {
 
     @PostMapping("/verifyOTP")
     ApiResponse<SMSResponse> verifyOTP(@RequestBody SMSRequest request) {
-        var result = smsService.verifyOTP(request.getPhoneNumber(), request.getOtp());
+        var result = authenticationService.verifyOTP(request.getPhoneNumber(), request.getOtp());
         return ApiResponse.<SMSResponse>builder()
                 .result(result)
                 .build();
