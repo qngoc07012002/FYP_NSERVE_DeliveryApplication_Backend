@@ -30,7 +30,8 @@ public class SecurityConfig {
             "/auth/logout",
             "/auth/refresh",
             "/auth/generateOTP",
-            "/auth/verifyOTP"
+            "/auth/verifyOTP",
+            "/ws/**"
     };
 
 
