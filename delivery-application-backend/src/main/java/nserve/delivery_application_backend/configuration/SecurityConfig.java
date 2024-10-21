@@ -31,7 +31,9 @@ public class SecurityConfig {
             "/auth/refresh",
             "/auth/generateOTP",
             "/auth/verifyOTP",
-            "/ws/**"
+            "/ws/**",
+            "/categories",
+            "/restaurants",
     };
 
 
