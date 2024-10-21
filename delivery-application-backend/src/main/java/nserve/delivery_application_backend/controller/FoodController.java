@@ -1,70 +1,56 @@
 package nserve.delivery_application_backend.controller;
 
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
-import nserve.delivery_application_backend.dto.request.UserCreationRequest;
-import nserve.delivery_application_backend.dto.request.UserUpdateRequest;
-import nserve.delivery_application_backend.dto.response.ApiResponse;
-import nserve.delivery_application_backend.dto.response.UserResponse;
-import nserve.delivery_application_backend.entity.User;
-import nserve.delivery_application_backend.service.UserService;
-import org.springframework.security.core.context.SecurityContextHolder;
+import nserve.delivery_application_backend.entity.Food;
+import nserve.delivery_application_backend.service.FoodService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/foods")
-@RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
-@Slf4j
 public class FoodController {
-    UserService userService;
 
-    @PostMapping()
-    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
-        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+    @Autowired
+    private FoodService foodService;
 
-        apiResponse.setResult(userService.createUser(request));
-
-        return apiResponse;
+    @GetMapping
+    public List<Food> getAllFoods() {
+        return foodService.getAllFoods();
     }
 
-    @GetMapping()
-    List<User> getAllUsers() {
-
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        log.info("User: {}", authentication.getName());
-        authentication.getAuthorities().forEach(authority -> log.info("Authority: {}", authority.getAuthority()));
-
-        return userService.getAllUsers();
+    @GetMapping("/{id}")
+    public ResponseEntity<Food> getFoodById(@PathVariable String id) {
+        return foodService.getFoodById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/myInfo")
-    ApiResponse<UserResponse> getMyInfo() {
-        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
-
-        apiResponse.setResult(userService.getMyInfo());
-
-        return apiResponse;
+    @PostMapping
+    public ResponseEntity<Food> createFood(
+            @ModelAttribute Food food,
+            @RequestParam("image") MultipartFile image
+    ) throws IOException {
+        Food createdFood = foodService.createFood(food, image);
+        return ResponseEntity.ok(createdFood);
     }
 
-    @GetMapping("/{userId}")
-    UserResponse getUser(@PathVariable("userId") String userId) {
-        return userService.getUser(userId);
+    @PutMapping("/{id}")
+    public ResponseEntity<Food> updateFood(
+            @PathVariable String id,
+            @ModelAttribute Food food,
+            @RequestParam(value = "image", required = false) MultipartFile image
+    ) throws IOException {
+        Food updatedFood = foodService.updateFood(id, food, image);
+        return ResponseEntity.ok(updatedFood);
     }
 
-    @PutMapping("/{userId}")
-    UserResponse updateUser(@PathVariable("userId") String userId ,@RequestBody UserUpdateRequest request) {
-        return userService.updateUser(userId, request);
-    }
-
-    @DeleteMapping("/{userId}")
-    String deleteUser(@PathVariable("userId") String userId) {
-        userService.deleteUser(userId);
-        return "User deleted";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFood(@PathVariable String id) {
+        foodService.deleteFood(id);
+        return ResponseEntity.noContent().build();
     }
 }
