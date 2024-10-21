@@ -18,8 +18,16 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
+  resources:
+    static-locations: classpath:/static/
+
 jwt:
   signerKey: :"H1mk8C3kfSBv5QrocE58p+STDAbasBVqAVTJdVoPn+RNFr/wEGIkOxASKQpzcO7a"
   valid-duration: 3600 # in seconds
   refreshable-duration: 36000  # in second
+
+
+
+
+
 
