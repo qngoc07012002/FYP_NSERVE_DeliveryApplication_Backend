@@ -3,87 +3,71 @@ package nserve.delivery_application_backend.service;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import nserve.delivery_application_backend.dto.request.UserCreationRequest;
-import nserve.delivery_application_backend.dto.request.UserUpdateRequest;
-import nserve.delivery_application_backend.dto.response.UserResponse;
-import nserve.delivery_application_backend.entity.User;
-import nserve.delivery_application_backend.enums.Role;
-import nserve.delivery_application_backend.exception.AppException;
-import nserve.delivery_application_backend.exception.ErrorCode;
-import nserve.delivery_application_backend.mapper.UserMapper;
-import nserve.delivery_application_backend.repository.RoleRepository;
-import nserve.delivery_application_backend.repository.UserRepository;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import nserve.delivery_application_backend.entity.Food;
+import nserve.delivery_application_backend.repository.FoodRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor // Lombok will generate a constructor with all the required fields
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 @Slf4j
 public class FoodService {
-    UserRepository userRepository;
-    UserMapper userMapper;
-    PasswordEncoder passwordEncoder;
-    RoleRepository roleRepository;
 
-    public UserResponse createUser(UserCreationRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new AppException(ErrorCode.USER_EXISTED);
+    private FoodRepository foodRepository;
+
+    private final String imageDirectory = "src/main/resources/static/images/";
+
+    public List<Food> getAllFoods() {
+        return foodRepository.findAll();
+    }
+
+    public Optional<Food> getFoodById(String id) {
+        return foodRepository.findById(id);
+    }
+
+    public Food createFood(Food food, MultipartFile image) throws IOException {
+        String imageUrl = saveImage(image);
+        food.setImgUrl(imageUrl);
+        return foodRepository.save(food);
+    }
+
+    public Food updateFood(String id, Food foodDetails, MultipartFile image) throws IOException {
+        Food food = foodRepository.findById(id).orElseThrow(() -> new RuntimeException("Food not found"));
+
+        food.setName(foodDetails.getName());
+        food.setDescription(foodDetails.getDescription());
+        food.setPrice(foodDetails.getPrice());
+        food.setCategory(foodDetails.getCategory());
+        food.setRestaurant(foodDetails.getRestaurant());
+
+        if (!image.isEmpty()) {
+            String imageUrl = saveImage(image);
+            food.setImgUrl(imageUrl);
         }
 
-        User user = userMapper.toUser(request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
-
-
-        return userMapper.toUserResponse(userRepository.save(user));
+        return foodRepository.save(food);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<User> getAllUsers() {
-        log.info("In method get Users");
-        return userRepository.findAll();
+
+    public void deleteFood(String id) {
+        foodRepository.deleteById(id);
     }
 
-    public UserResponse getMyInfo(){
-        var context = SecurityContextHolder.getContext();
-        String email = context.getAuthentication().getName();
-
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
-        return userMapper.toUserResponse(user);
-    }
-
-    @PostAuthorize("returnObject.username == authentication.name")
-    public UserResponse getUser(String userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-
-        return userMapper.toUserResponse(user);
-    }
-
-    public UserResponse updateUser(String userId, UserUpdateRequest request){
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        System.out.println("User: " + user);
-        userMapper.updateUser(user, request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        var roles = roleRepository.findAllById(request.getRoles());
-
-        user.setRoles(new HashSet<>(roles));
-
-
-        return userMapper.toUserResponse(userRepository.save(user));
-    }
-
-    public void deleteUser(String userId){
-        userRepository.deleteById(userId);
+    private String saveImage(MultipartFile image) throws IOException {
+        if (!image.isEmpty()) {
+            String fileName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+            File file = new File(imageDirectory + fileName);
+            image.transferTo(file);
+            return "/images/" + fileName;
+        }
+        return null;
     }
 }
