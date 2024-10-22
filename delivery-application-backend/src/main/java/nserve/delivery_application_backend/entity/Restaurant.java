@@ -19,7 +19,13 @@ public class Restaurant {
     @JoinColumn(name ="owner_id")
     User owner;
     String restaurantName;
+    String description;
     String address;
     float rating;
+    String imgUrl;
+
+    @ManyToOne
+    @JoinColumn(name ="location_id")
+    Location location;
 
 }
