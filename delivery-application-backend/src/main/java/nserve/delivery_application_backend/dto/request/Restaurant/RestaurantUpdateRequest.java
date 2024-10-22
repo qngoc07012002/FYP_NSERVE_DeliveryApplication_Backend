@@ -1,8 +1,7 @@
-package nserve.delivery_application_backend.dto.response;
+package nserve.delivery_application_backend.dto.request.Restaurant;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import nserve.delivery_application_backend.entity.User;
 
 @Getter
 @Setter
@@ -10,12 +9,8 @@ import nserve.delivery_application_backend.entity.User;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RestaurantResponse {
-    String id;
-    User owner;
+public class RestaurantUpdateRequest {
     String restaurantName;
-    String description;
     String address;
-    String imgUrl;
     float rating;
 }
