@@ -17,6 +17,11 @@ public enum ErrorCode {
     UNAUTHENTICATED(1007, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1008, "Unauthorized", HttpStatus.FORBIDDEN),
     PHONE_INVALID(1009, "Phone number is invalid", HttpStatus.BAD_REQUEST),
+    CATEGORY_NOT_FOUND(1010, "Category not found", HttpStatus.NOT_FOUND),
+    RESTAURANT_NOT_FOUND(1011, "Restaurant not found", HttpStatus.NOT_FOUND),
+    FOOD_NOT_FOUND(1012, "Food not found", HttpStatus.NOT_FOUND),
+    FILE_UPLOAD_FAILED(1013, "File upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    FILE_TYPE_INVALID(1014, "Only PNG and JPG files are allowed", HttpStatus.BAD_REQUEST),
     ;
     private int code;
     private String message;

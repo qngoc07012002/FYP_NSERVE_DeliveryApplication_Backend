@@ -1,19 +1,17 @@
 package nserve.delivery_application_backend.mapper;
 
-import nserve.delivery_application_backend.dto.request.UserCreationRequest;
-import nserve.delivery_application_backend.dto.request.UserUpdateRequest;
-import nserve.delivery_application_backend.dto.response.UserResponse;
-import nserve.delivery_application_backend.entity.User;
+import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantCreationRequest;
+import nserve.delivery_application_backend.dto.response.RestaurantResponse;
+import nserve.delivery_application_backend.entity.Restaurant;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface RestaurantMapper {
-    User toUser(UserCreationRequest request);
+    Restaurant toRestaurant(RestaurantCreationRequest request);
 
-    UserResponse toUserResponse(User user);
+    RestaurantResponse toRestaurantResponse(Restaurant restaurant);
 
-    @Mapping(target = "roles", ignore = true)
-    void updateUser(@MappingTarget User user, UserUpdateRequest request);
+    List<RestaurantResponse> toRestaurantResponses(List<Restaurant> restaurants);
 }
