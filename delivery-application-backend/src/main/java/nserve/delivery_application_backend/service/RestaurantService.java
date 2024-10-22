@@ -3,44 +3,65 @@ package nserve.delivery_application_backend.service;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantUpdateRequest;
+import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantCreationRequest;
+import nserve.delivery_application_backend.dto.response.RestaurantResponse;
 import nserve.delivery_application_backend.entity.Restaurant;
+import nserve.delivery_application_backend.entity.User;
+import nserve.delivery_application_backend.exception.AppException;
+import nserve.delivery_application_backend.exception.ErrorCode;
+import nserve.delivery_application_backend.mapper.RestaurantMapper; // Giả sử bạn có một mapper cho Restaurant
 import nserve.delivery_application_backend.repository.RestaurantRepository;
+import nserve.delivery_application_backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor // Lombok will generate a constructor with all the required fields
+@RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 @Slf4j
 public class RestaurantService {
-    private RestaurantRepository restaurantRepository;
+    RestaurantRepository restaurantRepository;
+    RestaurantMapper restaurantMapper;
+    UserRepository userRepository;
+    public RestaurantResponse createRestaurant(RestaurantCreationRequest request) {
+        Restaurant restaurant = restaurantMapper.toRestaurant(request);
+        User user = userRepository.findById(request.getOwnerId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        restaurant.setOwner(user);
 
-    public List<Restaurant> getAllRestaurants() {
-        return restaurantRepository.findAll();
+        RestaurantResponse restaurantResponse = restaurantMapper.toRestaurantResponse(restaurantRepository.save(restaurant));
+        restaurantResponse.setOwner(restaurant.getOwner());
+
+        return restaurantResponse;
     }
 
-    public Optional<Restaurant> getRestaurantById(String id) {
-        return restaurantRepository.findById(id);
+    public List<RestaurantResponse> getAllRestaurants() {
+        return restaurantMapper.toRestaurantResponses(restaurantRepository.findAll());
     }
 
-    public Restaurant createRestaurant(Restaurant restaurant) {
-        return restaurantRepository.save(restaurant);
+    public RestaurantResponse getRestaurant(String restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_FOUND));
+        return restaurantMapper.toRestaurantResponse(restaurant);
     }
 
-    public Restaurant updateRestaurant(String id, Restaurant updatedRestaurant) {
-        return restaurantRepository.findById(id)
-                .map(restaurant -> {
-                    restaurant.setRestaurantName(updatedRestaurant.getRestaurantName());
-                    restaurant.setAddress(updatedRestaurant.getAddress());
-                    restaurant.setRating(updatedRestaurant.getRating());
-                    return restaurantRepository.save(restaurant);
-                })
-                .orElseThrow(() -> new RuntimeException("Restaurant not found with id: " + id));
+    public RestaurantResponse updateRestaurant(String restaurantId, RestaurantUpdateRequest request) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_FOUND));
+
+        restaurant.setRestaurantName(request.getRestaurantName());
+        restaurant.setAddress(request.getAddress());
+        restaurant.setRating(request.getRating());
+
+        return restaurantMapper.toRestaurantResponse(restaurantRepository.save(restaurant));
     }
 
-    public void deleteRestaurant(String id) {
-        restaurantRepository.deleteById(id);
+    public void deleteRestaurant(String restaurantId) {
+        if (!restaurantRepository.existsById(restaurantId)) {
+            throw new AppException(ErrorCode.RESTAURANT_NOT_FOUND);
+        }
+        restaurantRepository.deleteById(restaurantId);
     }
 }
