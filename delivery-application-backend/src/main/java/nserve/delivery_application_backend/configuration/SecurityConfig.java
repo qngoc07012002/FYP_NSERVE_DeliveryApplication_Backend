@@ -34,6 +34,9 @@ public class SecurityConfig {
             "/ws/**",
             "/categories",
             "/restaurants",
+            "/foods/**",
+            "/files/**",
+            "/images/**",
     };
 
 
