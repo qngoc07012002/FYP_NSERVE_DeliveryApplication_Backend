@@ -32,6 +32,7 @@ public class SecurityConfig {
             "/auth/generateOTP",
             "/auth/verifyOTP",
             "/ws/**",
+            "/ws",
             "/categories",
             "/restaurants",
             "/foods/**",

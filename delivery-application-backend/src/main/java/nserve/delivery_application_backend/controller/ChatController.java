@@ -1,25 +1,16 @@
 package nserve.delivery_application_backend.controller;
 
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
-import nserve.delivery_application_backend.entity.ChatMessage;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 
-@RestController
-@RequestMapping("/drivers")
-@RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
-@Slf4j
+@Controller
 public class ChatController {
 
-    @MessageMapping("/sendMessage")
-    @SendTo("/topic/messages")
+    @MessageMapping("/send") // Địa chỉ để gửi tin nhắn
+    @SendTo("/topic/messages") // Địa chỉ gửi tin nhắn tới tất cả client
     public ChatMessage sendMessage(ChatMessage message) {
-        log.info("Message: {}", message.getContent());
         return message;
     }
 }
+
