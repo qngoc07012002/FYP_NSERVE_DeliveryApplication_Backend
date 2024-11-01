@@ -19,6 +19,9 @@ public class Restaurant {
     @JoinColumn(name ="owner_id")
     User owner;
     String restaurantName;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    Category category;
     String description;
     String address;
     float rating;
@@ -27,5 +30,5 @@ public class Restaurant {
     @ManyToOne
     @JoinColumn(name ="location_id")
     Location location;
-
+    String status;
 }
