@@ -17,9 +17,7 @@ public class Food {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    Category category;
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     Restaurant restaurant;
@@ -29,6 +27,6 @@ public class Food {
     String imgUrl;
     Date createAt;
     Date updateAt;
-
+    String status;
 
 }
