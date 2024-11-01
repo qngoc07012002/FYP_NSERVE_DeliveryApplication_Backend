@@ -15,12 +15,11 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FoodResponse {
     String id;
-    Category category;
-    Restaurant restaurant;
     String name;
     String description;
     float price;
     String imgUrl;
+    String status;
     Date createAt;
     Date updateAt;
 }

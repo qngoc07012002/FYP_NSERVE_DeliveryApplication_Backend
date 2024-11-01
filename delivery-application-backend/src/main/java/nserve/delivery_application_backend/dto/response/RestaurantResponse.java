@@ -12,10 +12,10 @@ import nserve.delivery_application_backend.entity.User;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RestaurantResponse {
     String id;
-    User owner;
     String restaurantName;
     String description;
     String address;
     String imgUrl;
+    String status;
     float rating;
 }
