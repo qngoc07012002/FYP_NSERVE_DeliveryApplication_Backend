@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import nserve.delivery_application_backend.dto.request.Food.FoodCreationRequest;
+import nserve.delivery_application_backend.dto.request.Food.FoodStatusUpdateRequest;
 import nserve.delivery_application_backend.dto.request.Food.FoodUpdateRequest;
 import nserve.delivery_application_backend.dto.response.ApiResponse;
 import nserve.delivery_application_backend.dto.response.FoodResponse;
@@ -89,5 +90,18 @@ public class FoodController {
                 .result("Food with ID " + foodId + " deleted.")
                 .build();
     }
+
+    @PutMapping("/{foodId}/status")
+    public ApiResponse<FoodResponse> updateFoodStatus(
+            @PathVariable("foodId") String foodId,
+            @RequestBody FoodStatusUpdateRequest statusUpdateRequest) {
+        FoodResponse foodResponse = foodService.updateFoodStatus(foodId, statusUpdateRequest);
+        return ApiResponse.<FoodResponse>builder()
+                .code(1000)
+                .message("Food status updated successfully")
+                .result(foodResponse)
+                .build();
+    }
+
 }
 
