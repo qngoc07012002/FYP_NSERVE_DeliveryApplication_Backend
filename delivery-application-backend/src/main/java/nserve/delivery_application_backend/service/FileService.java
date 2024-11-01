@@ -40,7 +40,7 @@ public class FileService {
             BufferedOutputStream stream = new BufferedOutputStream(new java.io.FileOutputStream(serverFile));
             stream.write(file.getBytes());
             stream.close();
-            return new FileResponse(serverFile.getName());
+            return new FileResponse("/images/" + serverFile.getName());
         } catch (Exception e) {
             throw new AppException(ErrorCode.FILE_UPLOAD_FAILED);
         }
