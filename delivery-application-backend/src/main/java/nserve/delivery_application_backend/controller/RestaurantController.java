@@ -4,9 +4,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import nserve.delivery_application_backend.dto.request.Food.FoodStatusUpdateRequest;
 import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantCreationRequest;
+import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantStatusUpdateRequest;
 import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantUpdateRequest;
 import nserve.delivery_application_backend.dto.response.ApiResponse;
+import nserve.delivery_application_backend.dto.response.FoodResponse;
 import nserve.delivery_application_backend.dto.response.RestaurantResponse;
 import nserve.delivery_application_backend.entity.Restaurant;
 import nserve.delivery_application_backend.service.RestaurantService;
@@ -34,9 +37,9 @@ public class RestaurantController {
         return restaurantService.getAllRestaurants();
     }
 
-    @GetMapping("/{restaurantId}")
-    RestaurantResponse getRestaurant(@PathVariable("restaurantId") String restaurantId) {
-        return restaurantService.getRestaurant(restaurantId);
+    @GetMapping("/info")
+    RestaurantResponse getRestaurant() {
+        return restaurantService.getRestaurant();
     }
 
     @PutMapping("/{restaurantId}")
@@ -48,5 +51,17 @@ public class RestaurantController {
     String deleteRestaurant(@PathVariable("restaurantId") String restaurantId) {
         restaurantService.deleteRestaurant(restaurantId);
         return "Restaurant deleted";
+    }
+
+    @PutMapping("/{restaurantId}/status")
+    public ApiResponse<RestaurantResponse> updateFoodStatus(
+            @PathVariable("restaurantId") String restaurantId,
+            @RequestBody RestaurantStatusUpdateRequest statusUpdateRequest) {
+        RestaurantResponse restaurantResponse = restaurantService.updateRestaurantStatus(restaurantId, statusUpdateRequest);
+        return ApiResponse.<RestaurantResponse>builder()
+                .code(1000)
+                .message("Food status updated successfully")
+                .result(restaurantResponse)
+                .build();
     }
 }
