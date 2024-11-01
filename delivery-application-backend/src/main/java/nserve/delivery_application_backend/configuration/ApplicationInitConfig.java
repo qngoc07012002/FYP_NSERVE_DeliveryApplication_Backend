@@ -27,13 +27,31 @@ public class ApplicationInitConfig {
     ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository){
         return args -> {
             if (userRepository.findByEmail("admin").isEmpty()) {
-                Role role = new Role().builder()
+                Role adminRole = new Role().builder()
                         .name("ADMIN")
                         .description("Admin role").build();
-                roleRepository.save(role);
+                roleRepository.save(adminRole);
+
+                Role customerRole = new Role().builder()
+                        .name("CUSTOMER")
+                        .description("Customer role").build();
+                roleRepository.save(customerRole);
+
+                Role restaurantRole = new Role().builder()
+                        .name("RESTAURANT")
+                        .description("Restaurant role").build();
+                roleRepository.save(restaurantRole);
+
+                Role driverRole = new Role().builder()
+                        .name("DRIVER")
+                        .description("Driver role").build();
+                roleRepository.save(driverRole);
 
                 var roles = new HashSet<Role>();
-                roles.add(role);
+                roles.add(adminRole);
+                roles.add(customerRole);
+                roles.add(restaurantRole);
+                roles.add(driverRole);
                 User user = User.builder()
                         .email("admin")
                         .password(passwordEncoder.encode("admin"))
