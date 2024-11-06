@@ -1,8 +1,8 @@
-package nserve.delivery_application_backend.dto.response;
+package nserve.delivery_application_backend.dto.response.Restaurant;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import nserve.delivery_application_backend.entity.User;
+import nserve.delivery_application_backend.entity.Category;
 
 @Getter
 @Setter
@@ -17,5 +17,6 @@ public class RestaurantResponse {
     String address;
     String imgUrl;
     String status;
+    Category category;
     float rating;
 }

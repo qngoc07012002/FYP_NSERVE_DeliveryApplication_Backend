@@ -2,6 +2,7 @@ package nserve.delivery_application_backend.dto.request.Food;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -12,9 +13,6 @@ import lombok.experimental.FieldDefaults;
 public class FoodCreationRequest {
     String name;
     String description;
-    float price;
-    String categoryId;
-    String restaurantId;
     String imgUrl;
-
+    float price;
 }

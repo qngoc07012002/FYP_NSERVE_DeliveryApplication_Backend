@@ -1,4 +1,4 @@
-package nserve.delivery_application_backend.dto.request.Food;
+package nserve.delivery_application_backend.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,11 +9,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class FoodUpdateRequest {
+public class CategoryResponse {
+    String id;
     String name;
-    String description;
-    String imgUrl;
-    float price;
 }
-
-
