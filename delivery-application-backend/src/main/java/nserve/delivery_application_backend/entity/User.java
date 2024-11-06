@@ -23,6 +23,7 @@ public class User {
     String password;
     String fullName;
     String regionId;
+    String imgUrl;
     Date createAt;
     Date updateAt;
     @OneToMany

@@ -22,6 +22,7 @@ public enum ErrorCode {
     FOOD_NOT_FOUND(1012, "Food not found", HttpStatus.NOT_FOUND),
     FILE_UPLOAD_FAILED(1013, "File upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
     FILE_TYPE_INVALID(1014, "Only PNG and JPG files are allowed", HttpStatus.BAD_REQUEST),
+    UPLOAD_FAILED(1015, "Upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
     ;
     private int code;
     private String message;
