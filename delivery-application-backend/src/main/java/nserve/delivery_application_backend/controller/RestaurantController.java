@@ -4,14 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import nserve.delivery_application_backend.dto.request.Food.FoodStatusUpdateRequest;
 import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantCreationRequest;
 import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantStatusUpdateRequest;
 import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantUpdateRequest;
 import nserve.delivery_application_backend.dto.response.ApiResponse;
-import nserve.delivery_application_backend.dto.response.FoodResponse;
-import nserve.delivery_application_backend.dto.response.RestaurantResponse;
-import nserve.delivery_application_backend.entity.Restaurant;
+import nserve.delivery_application_backend.dto.response.Restaurant.RestaurantResponse;
 import nserve.delivery_application_backend.service.RestaurantService;
 import org.springframework.web.bind.annotation.*;
 

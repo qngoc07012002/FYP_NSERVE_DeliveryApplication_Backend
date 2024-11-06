@@ -10,6 +10,9 @@ import nserve.delivery_application_backend.dto.response.ApiResponse;
 import nserve.delivery_application_backend.dto.response.FoodResponse;
 import nserve.delivery_application_backend.entity.Food;
 import nserve.delivery_application_backend.service.FoodService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,31 +26,23 @@ import java.util.List;
 public class FoodController {
     FoodService foodService;
 
+
     @PostMapping()
     public ApiResponse<FoodResponse> createFood(
             @RequestBody FoodCreationRequest foodRequest) {
-
-
-        try {
-            FoodResponse foodResponse = foodService.createFood(foodRequest);
-            return ApiResponse.<FoodResponse>builder()
-                    .code(1000)
-                    .message("Food created successfully")
-                    .result(foodResponse)
-                    .build();
-        } catch (IOException e) {
-            return ApiResponse.<FoodResponse>builder()
-                    .code(5000)
-                    .message("Internal server error: " + e.getMessage())
-                    .build();
-        }
+        FoodResponse foodResponse = foodService.createFood(foodRequest);
+        return ApiResponse.<FoodResponse>builder()
+                .code(1000)
+                .message("Food created successfully")
+                .result(foodResponse)
+                .build();
     }
 
     @PutMapping("/{foodId}")
-    public ApiResponse<FoodResponse> updateFood(
+    public ApiResponse<FoodResponse> updateFood(@PathVariable("foodId") String foodId,
             @RequestBody FoodUpdateRequest foodRequest) {
         try {
-            FoodResponse foodResponse = foodService.updateFood(foodRequest);
+            FoodResponse foodResponse = foodService.updateFood(foodId, foodRequest);
             return ApiResponse.<FoodResponse>builder()
                     .code(1000)
                     .message("Food updated successfully")
@@ -64,6 +59,16 @@ public class FoodController {
     @GetMapping()
     public ApiResponse<List<FoodResponse>> getAllFoods() {
         List<FoodResponse> foodResponses = foodService.getAllFoods();
+        return ApiResponse.<List<FoodResponse>>builder()
+                .code(1000)
+                .message("Foods retrieved successfully")
+                .result(foodResponses)
+                .build();
+    }
+
+    @GetMapping("/restaurant/{restaurantId}")
+    public ApiResponse<List<FoodResponse>> getAllFoodsByRestaurantId(@PathVariable("restaurantId") String restaurantId) {
+        List<FoodResponse> foodResponses = foodService.getAllFoodsByRestaurantId(restaurantId);
         return ApiResponse.<List<FoodResponse>>builder()
                 .code(1000)
                 .message("Foods retrieved successfully")
