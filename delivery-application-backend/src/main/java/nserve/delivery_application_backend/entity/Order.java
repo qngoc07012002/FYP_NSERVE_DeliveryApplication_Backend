@@ -28,9 +28,15 @@ public class Order {
     @JoinColumn(name = "driver_id")
     Driver driver;
     String orderStatus;
+    String orderType;
     float totalPrice;
     Date createAt;
-    Date updateAt;
-
+    String orderCode;
+    @ManyToOne
+    @JoinColumn(name = "start_id")
+    Location startLocation;
+    @ManyToOne
+    @JoinColumn(name = "end_id")
+    Location endLocation;
 
 }

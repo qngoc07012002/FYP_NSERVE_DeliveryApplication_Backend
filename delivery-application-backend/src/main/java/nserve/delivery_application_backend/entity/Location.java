@@ -22,6 +22,6 @@ public class Location {
     String Longitude;
     String Latitude;
 
-
+    String address;
 
 }

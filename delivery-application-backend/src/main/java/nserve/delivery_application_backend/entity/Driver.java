@@ -20,4 +20,6 @@ public class Driver {
     User user;
     String vehicleType;
     String licensePlate;
+    String status;
+    float balance;
 }

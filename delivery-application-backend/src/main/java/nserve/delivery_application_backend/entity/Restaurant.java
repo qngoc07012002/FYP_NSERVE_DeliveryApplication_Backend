@@ -31,4 +31,5 @@ public class Restaurant {
     @JoinColumn(name ="location_id")
     Location location;
     String status;
+    float balance;
 }
