@@ -27,8 +27,10 @@ public class CategoryController {
     }
 
     @GetMapping()
-    List<Category> getAllCategories() {
-        return categoryService.getAllCategories();
+    ApiResponse<List<Category>> getAllCategories() {
+        ApiResponse<List<Category>> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(categoryService.getAllCategories());
+        return apiResponse;
     }
 
     @GetMapping("/{categoryId}")
