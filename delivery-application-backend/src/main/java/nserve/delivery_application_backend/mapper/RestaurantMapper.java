@@ -1,7 +1,7 @@
 package nserve.delivery_application_backend.mapper;
 
 import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantCreationRequest;
-import nserve.delivery_application_backend.dto.response.RestaurantResponse;
+import nserve.delivery_application_backend.dto.response.Restaurant.RestaurantResponse;
 import nserve.delivery_application_backend.entity.Restaurant;
 import org.mapstruct.Mapper;
 
