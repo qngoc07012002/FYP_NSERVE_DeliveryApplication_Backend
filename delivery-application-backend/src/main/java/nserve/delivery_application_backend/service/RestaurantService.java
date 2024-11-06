@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantStatusUpdateRequest;
 import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantUpdateRequest;
 import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantCreationRequest;
-import nserve.delivery_application_backend.dto.response.RestaurantResponse;
+import nserve.delivery_application_backend.dto.response.Restaurant.RestaurantResponse;
 import nserve.delivery_application_backend.entity.Restaurant;
 import nserve.delivery_application_backend.entity.User;
 import nserve.delivery_application_backend.exception.AppException;
@@ -14,12 +14,10 @@ import nserve.delivery_application_backend.exception.ErrorCode;
 import nserve.delivery_application_backend.mapper.RestaurantMapper; // Giả sử bạn có một mapper cho Restaurant
 import nserve.delivery_application_backend.repository.RestaurantRepository;
 import nserve.delivery_application_backend.repository.UserRepository;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +39,7 @@ public class RestaurantService {
         return restaurantResponse;
     }
 
-    @PreAuthorize("hasRole('CUSTOMER')")
+   // @PreAuthorize("hasRole('CUSTOMER')")
     public List<RestaurantResponse> getAllRestaurants() {
 
 
