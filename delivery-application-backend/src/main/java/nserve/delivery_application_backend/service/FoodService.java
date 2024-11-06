@@ -24,6 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,6 +38,8 @@ import java.util.stream.Collectors;
 @FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 @Slf4j
 public class FoodService {
+
+    private static final String IMAGE_DIR = "path/to/your/image/directory/";
 
     FoodRepository foodRepository;
     CategoryRepository categoryRepository;
@@ -63,15 +69,13 @@ public class FoodService {
         return convertToResponse(food);
     }
 
-    public FoodResponse createFood(FoodCreationRequest foodRequest) throws IOException {
+    public FoodResponse createFood(FoodCreationRequest foodRequest)  {
 
+        var context = SecurityContextHolder.getContext();
+        String userId = context.getAuthentication().getName();
 
-        Category category = categoryRepository.findById(foodRequest.getCategoryId())
-                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
-        Restaurant restaurant = restaurantRepository.findById(foodRequest.getRestaurantId())
+        Restaurant restaurant = restaurantRepository.findByOwnerId(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_FOUND));
-
-
 
         Food food = new Food();
         food.setName(foodRequest.getName());
@@ -79,24 +83,33 @@ public class FoodService {
         food.setPrice(foodRequest.getPrice());
         food.setRestaurant(restaurant);
         food.setImgUrl(foodRequest.getImgUrl());
+        food.setStatus("ACTIVE");
+        food.setCreateAt(new Date());
+        food.setUpdateAt(new Date());
 
         foodRepository.save(food);
         return foodMapper.toFoodResponse(food);
     }
 
-    public FoodResponse updateFood(FoodUpdateRequest request) throws IOException {
-        Food food = foodRepository.findById(request.getId())
+    public FoodResponse updateFood(String foodId, FoodUpdateRequest request) throws IOException {
+        Food food = foodRepository.findById(foodId)
                 .orElseThrow(() -> new AppException(ErrorCode.FOOD_NOT_FOUND));
+
+        var context = SecurityContextHolder.getContext();
+        String userId = context.getAuthentication().getName();
+
+        Restaurant restaurant = restaurantRepository.findByOwnerId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_FOUND));
+
+        if (!food.getRestaurant().getId().equals(restaurant.getId())) {
+            throw new AppException(ErrorCode.FOOD_NOT_FOUND);
+        }
+
+
 
         food.setName(request.getName());
         food.setDescription(request.getDescription());
         food.setPrice(request.getPrice());
-
-        Restaurant restaurant = restaurantRepository.findById(request.getRestaurantId())
-                .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_FOUND));
-
-        food.setRestaurant(restaurant);
-
         if (request.getImgUrl() != null ) {
             food.setImgUrl(request.getImgUrl());
         }
@@ -106,6 +119,21 @@ public class FoodService {
     }
 
     public void deleteFood(String id) {
+
+        var context = SecurityContextHolder.getContext();
+        String userId = context.getAuthentication().getName();
+
+        Restaurant restaurant = restaurantRepository.findByOwnerId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_FOUND));
+
+        Food food = foodRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.FOOD_NOT_FOUND));
+
+        if (!food.getRestaurant().getId().equals(restaurant.getId())) {
+            throw new AppException(ErrorCode.FOOD_NOT_FOUND);
+        }
+
+        
         foodRepository.deleteById(id);
     }
 
@@ -128,5 +156,16 @@ public class FoodService {
         food.setStatus(statusUpdateRequest.getStatus());
 
         return foodMapper.toFoodResponse(foodRepository.save(food));
+    }
+
+    public List<FoodResponse> getAllFoodsByRestaurantId(String restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_FOUND));
+
+        List<Food> foods = foodRepository.findByRestaurant(restaurant);
+
+        return foods.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 }
