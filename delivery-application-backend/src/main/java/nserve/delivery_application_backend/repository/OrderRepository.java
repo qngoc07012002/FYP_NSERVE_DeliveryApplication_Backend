@@ -1,5 +1,6 @@
 package nserve.delivery_application_backend.repository;
 
+import nserve.delivery_application_backend.entity.Driver;
 import nserve.delivery_application_backend.entity.Order;
 import nserve.delivery_application_backend.entity.Restaurant;
 import nserve.delivery_application_backend.entity.User;
@@ -13,4 +14,8 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, String> {
 
     List<Order> findByRestaurant(Restaurant restaurant);
+
+    List<Order> findByDriver(Driver driver);
+
+    List<Order> findByUser(User user);
 }

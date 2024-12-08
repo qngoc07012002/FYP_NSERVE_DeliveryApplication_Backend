@@ -19,8 +19,8 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    String Longitude;
-    String Latitude;
+    double Longitude;
+    double Latitude;
 
     String address;
 

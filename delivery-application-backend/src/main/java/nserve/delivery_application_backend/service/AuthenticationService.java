@@ -26,7 +26,9 @@ import nserve.delivery_application_backend.exception.AppException;
 import nserve.delivery_application_backend.exception.ErrorCode;
 import nserve.delivery_application_backend.repository.InvalidatedTokenRepository;
 import nserve.delivery_application_backend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -62,13 +64,20 @@ public class AuthenticationService {
     @Value("${jwt.refreshable-duration}")
     protected long REFRESHABLE_DURATION;
 
+    private static final String ACCOUNT_SID = "AC587ce38083646e33a9818d3ce6f3d6b7";
+    private static final String ACCOUNT_PASSWORD = "2b51292c820f170e88c18e28283b7735";
+    private static final String SERVICE_ID = "VA6a5cc2cac450c9e45350b856337ac19e";
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     public SMSResponse sendOTP(String phoneNumber) {
         if (!userRepository.existsByPhoneNumber(phoneNumber)) throw new AppException(ErrorCode.USER_NOT_FOUND);
 
-        Twilio.init("AC587ce38083646e33a9818d3ce6f3d6b7", "2b51292c820f170e88c18e28283b7735");
+        Twilio.init(ACCOUNT_SID, ACCOUNT_PASSWORD);
 
         Verification verification = Verification.creator(
-                        "VA6a5cc2cac450c9e45350b856337ac19e",
+                        SERVICE_ID,
                         phoneNumber,
                         "sms")
                 .create();
@@ -83,13 +92,13 @@ public class AuthenticationService {
     }
 
     public SMSResponse verifyOTP(String phoneNumber, String otp){
-        Twilio.init("AC587ce38083646e33a9818d3ce6f3d6b7", "2b51292c820f170e88c18e28283b7735");
+        Twilio.init(ACCOUNT_SID, ACCOUNT_PASSWORD);
 
         try {
             var user = userRepository.findByPhoneNumber(phoneNumber)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             VerificationCheck verificationCheck = VerificationCheck.creator(
-                            "VA6a5cc2cac450c9e45350b856337ac19e",otp)
+                            SERVICE_ID,otp)
                     .setTo(phoneNumber)
                     .create();
 
@@ -111,6 +120,7 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());

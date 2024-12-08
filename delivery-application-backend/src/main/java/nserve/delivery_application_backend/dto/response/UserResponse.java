@@ -17,9 +17,7 @@ import java.util.Set;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class UserResponse {
     String id;
-    String username;
-    String firstName;
-    String lastName;
-    LocalDate dob;
-    Set<Role> roles;
+    String phoneNumber;
+    String email;
+    String fullName;
 }

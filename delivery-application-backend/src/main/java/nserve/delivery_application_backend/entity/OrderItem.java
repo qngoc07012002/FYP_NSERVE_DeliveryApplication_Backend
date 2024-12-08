@@ -20,10 +20,8 @@ public class OrderItem {
     @ManyToOne
     @JoinColumn(name = "order_id")
     Order order;
-    @ManyToOne
-    @JoinColumn(name = "food_id")
-    Food food;
+    String foodName;
     int quantity;
-    float price;
+    float totalPrice;
     
 }

@@ -51,13 +51,13 @@ public class RestaurantController {
     }
 
     @PutMapping("/{restaurantId}/status")
-    public ApiResponse<RestaurantResponse> updateFoodStatus(
+    public ApiResponse<RestaurantResponse> updateRestaurantStatus(
             @PathVariable("restaurantId") String restaurantId,
             @RequestBody RestaurantStatusUpdateRequest statusUpdateRequest) {
         RestaurantResponse restaurantResponse = restaurantService.updateRestaurantStatus(restaurantId, statusUpdateRequest);
         return ApiResponse.<RestaurantResponse>builder()
                 .code(1000)
-                .message("Food status updated successfully")
+                .message("Restaurant status updated successfully")
                 .result(restaurantResponse)
                 .build();
     }

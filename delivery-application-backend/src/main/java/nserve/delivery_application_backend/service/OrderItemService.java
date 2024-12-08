@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import nserve.delivery_application_backend.dto.request.UserCreationRequest;
 import nserve.delivery_application_backend.dto.request.UserUpdateRequest;
 import nserve.delivery_application_backend.dto.response.UserResponse;
+import nserve.delivery_application_backend.entity.Order;
 import nserve.delivery_application_backend.entity.OrderItem;
 import nserve.delivery_application_backend.entity.User;
 import nserve.delivery_application_backend.enums.Role;
@@ -33,5 +34,13 @@ public class OrderItemService {
 
     public List<OrderItem> findByOrderId(String id) {
         return orderItemRepository.findByOrderId(id);
+    }
+
+    public List<OrderItem> createOrderItems(List<OrderItem> orderItems, Order order) {
+        orderItems.forEach(orderItem -> {
+            orderItem.setOrder(order);
+            orderItemRepository.save(orderItem);
+        });
+        return orderItems;
     }
 }

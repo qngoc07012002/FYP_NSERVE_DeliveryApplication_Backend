@@ -30,6 +30,7 @@ public class Order {
     String orderStatus;
     String orderType;
     float totalPrice;
+    float shippingFee;
     Date createAt;
     String orderCode;
     @ManyToOne

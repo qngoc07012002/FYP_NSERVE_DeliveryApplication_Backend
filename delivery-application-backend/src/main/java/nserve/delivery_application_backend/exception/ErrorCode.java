@@ -23,7 +23,9 @@ public enum ErrorCode {
     FILE_UPLOAD_FAILED(1013, "File upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
     FILE_TYPE_INVALID(1014, "Only PNG and JPG files are allowed", HttpStatus.BAD_REQUEST),
     UPLOAD_FAILED(1015, "Upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
-    ;
+    RESTAURANT_OFFLINE(1016, "Restaurant is offline", HttpStatus.BAD_REQUEST),
+    ORDER_NOT_FOUND(1017, "Order not found", HttpStatus.NOT_FOUND),
+    DRIVER_NOT_FOUND(1018, "Driver not found", HttpStatus.NOT_FOUND),;
     private int code;
     private String message;
     private HttpStatusCode statusCode;

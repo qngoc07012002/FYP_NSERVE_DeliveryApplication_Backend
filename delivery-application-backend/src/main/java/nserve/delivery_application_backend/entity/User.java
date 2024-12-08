@@ -1,5 +1,6 @@
 package nserve.delivery_application_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,6 +27,7 @@ public class User {
     String imgUrl;
     Date createAt;
     Date updateAt;
+    @JsonIgnore
     @OneToMany
     Set<Role> roles;
 

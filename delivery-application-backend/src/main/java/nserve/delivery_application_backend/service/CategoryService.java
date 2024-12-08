@@ -34,9 +34,7 @@ public class CategoryService {
     public Category updateCategory(String categoryId, Category updatedCategory) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
-
         category.setName(updatedCategory.getName());
-
         return categoryRepository.save(category);
     }
 

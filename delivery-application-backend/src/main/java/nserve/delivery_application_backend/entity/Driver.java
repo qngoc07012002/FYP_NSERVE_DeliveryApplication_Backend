@@ -22,4 +22,7 @@ public class Driver {
     String licensePlate;
     String status;
     float balance;
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    Location location;
 }
