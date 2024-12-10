@@ -152,4 +152,11 @@ public class OrderController {
 
     }
 
+
+    @GetMapping("/statistics")
+    public ApiResponse<StatisticsResponse> getStatistics() {
+        return ApiResponse.<StatisticsResponse>builder()
+                .result(orderService.getStatistics())
+                .build();
+    }
 }

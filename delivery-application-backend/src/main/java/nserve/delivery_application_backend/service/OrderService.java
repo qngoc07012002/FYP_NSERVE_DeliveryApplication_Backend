@@ -12,6 +12,7 @@ import nserve.delivery_application_backend.dto.response.Order.OrderDriverRespons
 import nserve.delivery_application_backend.dto.response.Order.OrderItemResponse;
 import nserve.delivery_application_backend.dto.response.Order.OrderRestaurantResponse;
 import nserve.delivery_application_backend.dto.response.ShippingFeeResponse;
+import nserve.delivery_application_backend.dto.response.StatisticsResponse;
 import nserve.delivery_application_backend.dto.response.Websocket.OrderItemRestaurantResponse;
 import nserve.delivery_application_backend.dto.response.Websocket.ReceiveOrderDriverResponse;
 import nserve.delivery_application_backend.dto.response.Websocket.ReceiveOrderRestaurantResponse;
@@ -695,5 +696,38 @@ public class OrderService {
 
         order.setOrderStatus("CANCELED");
         orderRepository.save(order);
+    }
+
+    public StatisticsResponse getStatistics() {
+        var context = SecurityContextHolder.getContext();
+        String userId = context.getAuthentication().getName();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        Restaurant restaurant = restaurantRepository.findByOwnerId(user.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_FOUND));
+
+
+
+        List<Order> orders = orderRepository.findByRestaurant(restaurant);
+
+        double revenue = 0;
+        int orderCount = 0;
+
+        for (Order order : orders) {
+            if (order.getOrderStatus().equals("DELIVERED")) {
+                revenue += order.getTotalPrice();
+                orderCount++;
+            }
+        }
+
+        log.info("Today revenue: " + revenue);
+        log.info("Today orders: " + orders.size());
+
+        return StatisticsResponse.builder()
+                .revenue(revenue)
+                .orderCount(orderCount)
+                .build();
     }
 }
