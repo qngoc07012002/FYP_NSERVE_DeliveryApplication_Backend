@@ -38,6 +38,12 @@ public class SecurityConfig {
             "/foods/**",
             "/files/**",
             "/images/**",
+            "/users/registerCustomer",
+            "/users/registerDriver",
+            "/users/registerRestaurant",
+            "/auth/customer/generateOTP",
+            "/auth/driver/generateOTP",
+            "/auth/restaurant/generateOTP",
     };
 
 

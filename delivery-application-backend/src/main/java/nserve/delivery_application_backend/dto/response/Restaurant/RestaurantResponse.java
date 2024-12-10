@@ -3,6 +3,7 @@ package nserve.delivery_application_backend.dto.response.Restaurant;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import nserve.delivery_application_backend.entity.Category;
+import nserve.delivery_application_backend.entity.Location;
 
 @Getter
 @Setter
@@ -19,4 +20,6 @@ public class RestaurantResponse {
     String status;
     Category category;
     float rating;
+    Location location;
+    float balance;
 }

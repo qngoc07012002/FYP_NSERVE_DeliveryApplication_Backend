@@ -22,4 +22,5 @@ public class OrderCreationRequest {
     float totalPrice;
     String orderType;
     String paymentMethod;
+    String paymentIntentId;
 }

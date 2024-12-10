@@ -29,6 +29,20 @@ public class RestaurantController {
         return apiResponse;
     }
 
+    @GetMapping("/checkRestaurantStatus/{restaurantId}")
+    public ApiResponse<String> checkRestaurantStatus(@PathVariable String restaurantId) {
+        try {
+            String status = restaurantService.checkRestaurantStatus(restaurantId);
+            return ApiResponse.<String>builder()
+                    .result(status)
+                    .build();
+        } catch (Exception e) {
+            return ApiResponse.<String>builder()
+                    .result("Unable to fetch restaurant status: " + e.getMessage())
+                    .build();
+        }
+    }
+
     @GetMapping()
     List<RestaurantResponse> getAllRestaurants() {
         return restaurantService.getAllRestaurants();

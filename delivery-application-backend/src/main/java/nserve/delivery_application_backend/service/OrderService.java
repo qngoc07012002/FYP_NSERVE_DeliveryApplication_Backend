@@ -1,5 +1,6 @@
 package nserve.delivery_application_backend.service;
 
+import com.stripe.exception.StripeException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -46,6 +47,7 @@ public class OrderService {
     private final SimpMessagingTemplate messagingTemplate;
     private final OrderItemRepository orderItemRepository;
     private final DriverRepository driverRepository;
+    StripeService stripeService;
 
     @Autowired
     private StringRedisTemplate redisTemplate;
@@ -311,6 +313,25 @@ public class OrderService {
                 throw new AppException(ErrorCode.RESTAURANT_OFFLINE);
             }
 
+            if (orderCreationRequest.getPaymentMethod().equals("Credit")){
+                if (orderCreationRequest.getPaymentIntentId().isEmpty()){
+                    log.error("Payment intent is required");
+                    throw new AppException(ErrorCode.PAYMENT_INTENT_REQUIRED);
+                } else {
+                    try {
+                        if (!stripeService.checkPaymentAmount(orderCreationRequest.getPaymentIntentId(), orderCreationRequest.getTotalPrice() + orderCreationRequest.getShippingFee() )) {
+                            log.error("Payment failed");
+                            throw new AppException(ErrorCode.PAYMENT_INTENT_REQUIRED);
+                        }
+                    } catch (StripeException e) {
+                        log.error("Payment failed");
+                        throw new AppException(ErrorCode.PAYMENT_INTENT_REQUIRED);
+                    }
+
+                }
+
+            }
+
             var context = SecurityContextHolder.getContext();
             String userId = context.getAuthentication().getName();
 
@@ -322,6 +343,8 @@ public class OrderService {
                     .orderStatus("PENDING")
                     .orderCode(generateOrderCode(orderCreationRequest.getOrderType()))
                     .orderType(orderCreationRequest.getOrderType())
+                    .paymentMethod(orderCreationRequest.getPaymentMethod())
+                    .paymentIntentId(orderCreationRequest.getPaymentIntentId())
                     .totalPrice(orderCreationRequest.getTotalPrice())
                     .shippingFee(orderCreationRequest.getShippingFee())
                     .startLocation(locationRepository.save(restaurant.getLocation()))
@@ -392,9 +415,9 @@ public class OrderService {
             }
 
 
-
-            orderItemRepository.deleteByOrderId(orderStatusUpdateRequest.getOrderId());
-            orderRepository.deleteById(orderStatusUpdateRequest.getOrderId());
+            cancelOrder(order.getId());
+            order.setOrderStatus("CANCELED");
+            orderRepository.save(order);
             log.info("Order is declined");
 
         } else if (orderStatusUpdateRequest.getAction().equals("RESTAURANT_ACCEPT_ORDER")) {
@@ -493,8 +516,23 @@ public class OrderService {
             order.setOrderStatus("DELIVERED");
 
             orderRepository.save(order);
-
             log.info("Order is delivered");
+
+            Restaurant restaurant = order.getRestaurant();
+            restaurant.setBalance(restaurant.getBalance() + order.getTotalPrice());
+            restaurantRepository.save(restaurant);
+
+            Driver driver = order.getDriver();
+
+            if (order.getPaymentMethod().equals("Credit")){
+                driver.setBalance(driver.getBalance() + order.getShippingFee());
+
+            } else {
+                driver.setBalance(driver.getBalance() - order.getTotalPrice() - order.getShippingFee());
+            }
+
+            driverRepository.save(driver);
+
             messagingTemplate.convertAndSend("/queue/customer/order/" + order.getUser().getId(),
                     WebsocketResponse.builder()
                             .action("DRIVER_DELIVERED_ORDER")
@@ -504,6 +542,12 @@ public class OrderService {
                                             .build()
                             )
                             .build());
+            messagingTemplate.convertAndSend("/queue/restaurant/order/" + order.getRestaurant().getId(),
+                    WebsocketResponse.builder().action("DRIVER_DELIVERED_ORDER").body(
+                            ReceiveOrderRestaurantResponse.builder()
+                                    .orderId(order.getId())
+                                    .build()
+                    ).build());
         }
 
 
@@ -566,6 +610,7 @@ public class OrderService {
                                         .orderId(order.getId())
                                         .build()
                         ).build());
+                cancelOrder(orderId);
 
                order.setOrderStatus("CANCELED");
                 orderRepository.save(order);
@@ -577,26 +622,45 @@ public class OrderService {
                                 .orderId(order.getId())
                                 .build()
                 ).build());
-
-                orderItemRepository.deleteByOrderId(orderId);
-
-                orderRepository.deleteById(orderId);
-                log.info("Order is declined");
+                cancelOrder(orderId);
+                order.setOrderStatus("CANCELED");
+                orderRepository.save(order);
             }
 
         }
     }
 
     private Driver findClosestDriver(String orderId, Location location) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
         List<Driver> drives = driverRepository.findAll();
 
         for (Driver driver : drives) {
             if (driver.getStatus().equals("ONLINE")) {
+                // find closest driver to the restaurant about 1 kilometers
                 if (calculateDistance(driver.getLocation().getLatitude(), driver.getLocation().getLongitude(), location.getLatitude(), location.getLongitude()) <= 1) {
                     if (!isDriverInBlacklist(orderId, driver.getId())) {
-                        return driver;
+                        if (order.getPaymentMethod().equals("Credit")){
+                            return driver;
+                        } else {
+                            if (driver.getBalance() >= order.getTotalPrice() + order.getShippingFee()) {
+                                return driver;
+                            }
+                        }
                     }
                 }
+//                if (order.getPaymentMethod().equals("Credit")){
+//                    if (!isDriverInBlacklist(orderId, driver.getId())) {
+//                        return driver;
+//                    }
+//                } else {
+//                    if (driver.getBalance() >= order.getTotalPrice() + order.getShippingFee()) {
+//                        if (!isDriverInBlacklist(orderId, driver.getId())) {
+//                            return driver;
+//                        }
+//                    }
+//                }
             }
         }
         return null;
@@ -619,5 +683,17 @@ public class OrderService {
         } else {
             throw new IllegalArgumentException("Invalid order type. Use 'FOOD' or 'RIDE'.");
         }
+    }
+
+    private void cancelOrder(String orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+        if (order.getPaymentMethod().equals("Credit")){
+            stripeService.refundPayment(order.getPaymentIntentId(), order.getTotalPrice() + order.getShippingFee());
+        }
+
+        order.setOrderStatus("CANCELED");
+        orderRepository.save(order);
     }
 }

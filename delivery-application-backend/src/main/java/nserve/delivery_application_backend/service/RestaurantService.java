@@ -89,4 +89,10 @@ public class RestaurantService {
 
         return restaurantMapper.toRestaurantResponse(restaurantRepository.save(restaurant));
     }
+
+    public String checkRestaurantStatus(String restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new AppException(ErrorCode.RESTAURANT_NOT_FOUND));
+        return restaurant.getStatus();
+    }
 }

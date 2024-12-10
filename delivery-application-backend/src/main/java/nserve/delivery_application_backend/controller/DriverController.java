@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import nserve.delivery_application_backend.dto.request.Driver.DriverDepositRequest;
 import nserve.delivery_application_backend.dto.request.Driver.DriverLocationUpdateRequest;
 import nserve.delivery_application_backend.dto.request.Driver.DriverStatusUpdateRequest;
 import nserve.delivery_application_backend.dto.request.Restaurant.RestaurantStatusUpdateRequest;
@@ -13,6 +14,7 @@ import nserve.delivery_application_backend.dto.response.ApiResponse;
 import nserve.delivery_application_backend.dto.response.DriverResponse;
 import nserve.delivery_application_backend.dto.response.Restaurant.RestaurantResponse;
 import nserve.delivery_application_backend.dto.response.UserResponse;
+import nserve.delivery_application_backend.entity.Location;
 import nserve.delivery_application_backend.entity.User;
 import nserve.delivery_application_backend.service.DriverService;
 import nserve.delivery_application_backend.service.UserService;
@@ -56,6 +58,24 @@ public class DriverController {
         return ApiResponse.<DriverResponse>builder()
                 .code(1000)
                 .message("Driver location updated successfully")
+                .build();
+    }
+
+    @GetMapping("/getDriverLocation/{driverId}")
+    public ApiResponse<Location> getDriverLocation(@PathVariable String driverId) {
+            return ApiResponse.<Location>builder()
+                    .code(1000)
+                    .message("Driver location retrieved successfully")
+                    .result(driverService.getDriverLocation(driverId))
+                    .build();
+
+    }
+
+    @PostMapping("/deposit")
+    public ApiResponse<String> depositDriver(@RequestBody DriverDepositRequest driverDepositRequest) {
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .result(driverService.depositDriver(driverDepositRequest))
                 .build();
     }
 }

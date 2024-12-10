@@ -40,6 +40,33 @@ public class AuthenticationController {
                 .build();
     }
 
+    @PostMapping("/customer/generateOTP")
+    ApiResponse<SMSResponse> sendSMSCustomer(@RequestBody SMSRequest request) {
+        var result = authenticationService.sendOTPCustomer(request.getPhoneNumber());
+
+        return ApiResponse.<SMSResponse>builder()
+                .result(result)
+                .build();
+    }
+
+    @PostMapping("/driver/generateOTP")
+    ApiResponse<SMSResponse> sendSMSDriver(@RequestBody SMSRequest request) {
+        var result = authenticationService.sendOTPDriver(request.getPhoneNumber());
+
+        return ApiResponse.<SMSResponse>builder()
+                .result(result)
+                .build();
+    }
+
+    @PostMapping("/restaurant/generateOTP")
+    ApiResponse<SMSResponse> sendSMSRestaurant(@RequestBody SMSRequest request) {
+        var result = authenticationService.sendOTPRestaurant(request.getPhoneNumber());
+
+        return ApiResponse.<SMSResponse>builder()
+                .result(result)
+                .build();
+    }
+
     @PostMapping("/verifyOTP")
     ApiResponse<SMSResponse> verifyOTP(@RequestBody SMSRequest request) {
         var result = authenticationService.verifyOTP(request.getPhoneNumber(), request.getOtp());
@@ -47,6 +74,8 @@ public class AuthenticationController {
                 .result(result)
                 .build();
     }
+
+
 
 
     @PostMapping("/introspect")

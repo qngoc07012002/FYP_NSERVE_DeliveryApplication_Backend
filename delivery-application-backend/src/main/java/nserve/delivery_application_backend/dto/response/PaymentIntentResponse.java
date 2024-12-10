@@ -5,20 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nserve.delivery_application_backend.entity.Role;
-
-import java.time.LocalDate;
-import java.util.Set;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class UserResponse {
-    String id;
-    String phoneNumber;
-    String email;
-    String fullName;
-    String imgUrl;
+public class PaymentIntentResponse {
+    String clientSecret;
+    String paymentIntentId;
 }

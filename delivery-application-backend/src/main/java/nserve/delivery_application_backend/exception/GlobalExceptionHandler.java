@@ -49,14 +49,6 @@ public class GlobalExceptionHandler {
                 .body(apiResponse);
     }
 
-    //Implement when install Spring Security
-//    @ExceptionHandler(value = AccessDeniedException.class)
-//    ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException e) {
-//        ApiResponse apiResponse = new ApiResponse();
-//        apiResponse.setCode(ErrorCode.UNAUTHORIZED.getCode());
-//        apiResponse.setMessage(ErrorCode.UNAUTHORIZED.getMessage());
-//        return ResponseEntity.status(ErrorCode.UNAUTHORIZED.getStatusCode()).body(apiResponse);
-//    }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {

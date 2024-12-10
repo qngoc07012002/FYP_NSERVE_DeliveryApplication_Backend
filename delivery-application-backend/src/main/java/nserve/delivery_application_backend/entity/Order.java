@@ -39,5 +39,7 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "end_id")
     Location endLocation;
+    String paymentMethod;
+    String paymentIntentId;
 
 }

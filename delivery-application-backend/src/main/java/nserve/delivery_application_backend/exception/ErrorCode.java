@@ -25,7 +25,11 @@ public enum ErrorCode {
     UPLOAD_FAILED(1015, "Upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
     RESTAURANT_OFFLINE(1016, "Restaurant is offline", HttpStatus.BAD_REQUEST),
     ORDER_NOT_FOUND(1017, "Order not found", HttpStatus.NOT_FOUND),
-    DRIVER_NOT_FOUND(1018, "Driver not found", HttpStatus.NOT_FOUND),;
+    DRIVER_NOT_FOUND(1018, "Driver not found", HttpStatus.NOT_FOUND),
+    PAYMENT_INTENT_REQUIRED(1019, "Payment intent is required", HttpStatus.BAD_REQUEST),
+    INVALID_USER_ROLE(1020, "Invalid user role", HttpStatus.BAD_REQUEST),
+    USER_ALREADY_EXISTS(1021, "User already exists", HttpStatus.BAD_REQUEST),
+    ROLE_NOT_FOUND(1022, "Role not found", HttpStatus.NOT_FOUND),;
     private int code;
     private String message;
     private HttpStatusCode statusCode;

@@ -6,8 +6,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import nserve.delivery_application_backend.entity.Role;
 import nserve.delivery_application_backend.entity.User;
+import nserve.delivery_application_backend.entity.UserRole;
 import nserve.delivery_application_backend.repository.RoleRepository;
 import nserve.delivery_application_backend.repository.UserRepository;
+import nserve.delivery_application_backend.repository.UserRoleRepository;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +26,7 @@ public class ApplicationInitConfig {
     PasswordEncoder passwordEncoder;
 
     @Bean
-    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository){
+    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository, UserRoleRepository userRoleRepository){
         return args -> {
             if (userRepository.findByEmail("admin").isEmpty()) {
                 Role adminRole = new Role().builder()
@@ -47,18 +49,29 @@ public class ApplicationInitConfig {
                         .description("Driver role").build();
                 roleRepository.save(driverRole);
 
-                var roles = new HashSet<Role>();
-                roles.add(adminRole);
-                roles.add(customerRole);
-                roles.add(restaurantRole);
-                roles.add(driverRole);
                 User user = User.builder()
                         .email("admin")
                         .password(passwordEncoder.encode("admin"))
-                         .roles(roles)
                         .build();
 
                 userRepository.save(user);
+
+                userRoleRepository.save(new UserRole().builder()
+                        .user(user)
+                        .role(adminRole)
+                        .build());
+
+                userRoleRepository.save(new UserRole().builder()
+                        .user(user)
+                        .role(customerRole)
+                        .build());
+
+                userRoleRepository.save(new UserRole().builder()
+                        .user(user)
+                        .role(restaurantRole)
+                        .build());
+
+
                 log.warn("Admin user created with password: admin");
             }
         };

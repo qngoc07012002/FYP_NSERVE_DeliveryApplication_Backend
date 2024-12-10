@@ -13,19 +13,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import nserve.delivery_application_backend.dto.request.AuthenticationRequest;
-import nserve.delivery_application_backend.dto.request.IntrospectRequest;
-import nserve.delivery_application_backend.dto.request.LogoutRequest;
-import nserve.delivery_application_backend.dto.request.RefreshRequest;
+import nserve.delivery_application_backend.dto.request.*;
 import nserve.delivery_application_backend.dto.response.AuthenticationResponse;
 import nserve.delivery_application_backend.dto.response.IntrospectResponse;
 import nserve.delivery_application_backend.dto.response.SMSResponse;
-import nserve.delivery_application_backend.entity.InvalidatedToken;
-import nserve.delivery_application_backend.entity.User;
+import nserve.delivery_application_backend.entity.*;
 import nserve.delivery_application_backend.exception.AppException;
 import nserve.delivery_application_backend.exception.ErrorCode;
-import nserve.delivery_application_backend.repository.InvalidatedTokenRepository;
-import nserve.delivery_application_backend.repository.UserRepository;
+import nserve.delivery_application_backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -38,9 +33,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -70,9 +63,242 @@ public class AuthenticationService {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    private DriverRepository driverRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
+    private RestaurantRepository restaurantRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+    @Autowired
+    private LocationRepository locationRepository;
 
     public SMSResponse sendOTP(String phoneNumber) {
         if (!userRepository.existsByPhoneNumber(phoneNumber)) throw new AppException(ErrorCode.USER_NOT_FOUND);
+
+        Twilio.init(ACCOUNT_SID, ACCOUNT_PASSWORD);
+
+        Verification verification = Verification.creator(
+                        SERVICE_ID,
+                        phoneNumber,
+                        "sms")
+                .create();
+
+        System.out.println(verification.getStatus());
+
+        log.info("OTP has been successfully generated, and awaits your verification {}", LocalDateTime.now());
+
+        SMSResponse smsResponse = new SMSResponse();
+        smsResponse.setStatus(verification.getStatus());
+        return smsResponse;
+    }
+
+    public String registerCustomer(RegisterCustomerRequest request) {
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.USER_ALREADY_EXISTS);
+        }
+
+
+        Role role = roleRepository.findByName("CUSTOMER")
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+
+        User user = User.builder()
+                .phoneNumber(request.getPhoneNumber())
+                .fullName(request.getName())
+                .email(request.getEmail())
+                .imgUrl(request.getImgUrl())
+                .build();
+
+        UserRole userRole = UserRole.builder()
+                .user(user)
+                .role(role)
+                .build();
+
+        userRepository.save(user);
+
+        userRoleRepository.save(userRole);
+
+
+
+        return "Customer created";
+    }
+
+    public String registerDriver(RegisterDriverRequest request) {
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.USER_ALREADY_EXISTS);
+        }
+
+        Role role = roleRepository.findByName("DRIVER")
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+
+        User user = User.builder()
+                .phoneNumber(request.getPhoneNumber())
+                .fullName(request.getName())
+                .email(request.getEmail())
+                .imgUrl(request.getImgUrl())
+                .build();
+
+        UserRole userRole = UserRole.builder()
+                .user(user)
+                .role(role)
+                .build();
+
+
+
+        user = userRepository.save(user);
+
+        Driver driver = Driver.builder()
+                .user(user)
+                .licensePlate(request.getLisenceNumber())
+                .status("ONLINE")
+                .balance(0)
+                .vehicleType("Bike")
+                .build();
+
+        driverRepository.save(driver);
+
+        userRoleRepository.save(userRole);
+
+        return "Driver created";
+    }
+
+    public String registerRestaurant(RegisterRestaurantRequest request) {
+        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.USER_ALREADY_EXISTS);
+        }
+
+
+        Role role = roleRepository.findByName("RESTAURANT")
+                .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+
+        User user = User.builder()
+                .phoneNumber(request.getPhoneNumber())
+                .build();
+
+        UserRole userRole = UserRole.builder()
+                .user(user)
+                .role(role)
+                .build();
+
+
+
+        user = userRepository.save(user);
+
+        Category category = categoryRepository.findByName(request.getCategory())
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        locationRepository.save(request.getLocation());
+
+        Restaurant restaurant = Restaurant.builder()
+                .owner(user)
+                .restaurantName(request.getRestaurantName())
+                .description(request.getDescription())
+                .location(request.getLocation())
+                .category(category)
+                .rating(5)
+                .status("ONLINE")
+                .balance(0)
+                .address(request.getLocation().getAddress())
+                .imgUrl(request.getImgUrl())
+                .build();
+
+        restaurantRepository.save(restaurant);
+
+        userRoleRepository.save(userRole);
+        return "Restaurant created";
+    }
+
+
+    public SMSResponse sendOTPCustomer(String phoneNumber) {
+        User user = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        log.info("User found {}", user);
+        List<UserRole> roles = userRoleRepository.findByUser(user);
+
+        boolean hasCustomerRole = false;
+        for (UserRole role : roles) {
+            if (role.getRole().getName().equals("CUSTOMER")) {
+                hasCustomerRole = true;
+                break;
+            }
+        }
+        log.info("User has customer role {}", hasCustomerRole);
+        if (!hasCustomerRole) {
+            throw new AppException(ErrorCode.INVALID_USER_ROLE);
+        }
+
+        Twilio.init(ACCOUNT_SID, ACCOUNT_PASSWORD);
+
+        Verification verification = Verification.creator(
+                        SERVICE_ID,
+                        phoneNumber,
+                        "sms")
+                .create();
+
+        System.out.println(verification.getStatus());
+
+        log.info("OTP has been successfully generated, and awaits your verification {}", LocalDateTime.now());
+
+        SMSResponse smsResponse = new SMSResponse();
+        smsResponse.setStatus(verification.getStatus());
+        return smsResponse;
+    }
+
+    public SMSResponse sendOTPDriver(String phoneNumber) {
+        User user = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        List<UserRole> roles = userRoleRepository.findByUser(user);
+
+        boolean hasDriverRole = false;
+        for (UserRole role : roles) {
+            if (role.getRole().getName().equals("DRIVER")) {
+                hasDriverRole = true;
+                break;
+            }
+        }
+
+        if (!hasDriverRole) {
+            throw new AppException(ErrorCode.INVALID_USER_ROLE);
+        }
+
+        Twilio.init(ACCOUNT_SID, ACCOUNT_PASSWORD);
+
+        Verification verification = Verification.creator(
+                        SERVICE_ID,
+                        phoneNumber,
+                        "sms")
+                .create();
+
+        System.out.println(verification.getStatus());
+
+        log.info("OTP has been successfully generated, and awaits your verification {}", LocalDateTime.now());
+
+        SMSResponse smsResponse = new SMSResponse();
+        smsResponse.setStatus(verification.getStatus());
+        return smsResponse;
+    }
+
+    public SMSResponse sendOTPRestaurant(String phoneNumber) {
+        User user = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        List<UserRole> roles = userRoleRepository.findByUser(user);
+
+        boolean hasRestaurantRole = false;
+        for (UserRole role : roles) {
+            if (role.getRole().getName().equals("RESTAURANT")) {
+                hasRestaurantRole = true;
+                break;
+            }
+        }
+
+        if (!hasRestaurantRole) {
+            throw new AppException(ErrorCode.INVALID_USER_ROLE);
+        }
 
         Twilio.init(ACCOUNT_SID, ACCOUNT_PASSWORD);
 
@@ -117,6 +343,8 @@ public class AuthenticationService {
         }
     }
 
+
+
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -158,7 +386,11 @@ public class AuthenticationService {
         try {
             var signToken = verifyToken(request.getToken(), true);
             String jit = signToken.getJWTClaimsSet().getJWTID();
+
+
             Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+
+            log.info("Expiry Time: {}", expiryTime);
 
             InvalidatedToken invalidatedToken = InvalidatedToken.builder()
                     .id(jit)
@@ -185,9 +417,9 @@ public class AuthenticationService {
 
         invalidatedTokenRepository.save(invalidatedToken);
 
-        var email = signJWT.getJWTClaimsSet().getSubject();
+        var userId  = signJWT.getJWTClaimsSet().getSubject();
 
-        var user = userRepository.findByEmail(email)
+        var user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         var token = generateToken(user);
@@ -252,13 +484,18 @@ public class AuthenticationService {
     }
 
     private String buildScope(User user){
+        List<UserRole> roles = userRoleRepository.findByUser(user);
+
         StringJoiner stringJoiner = new StringJoiner(" ");
-        if (!CollectionUtils.isEmpty(user.getRoles())) {
-            user.getRoles().forEach(role -> {
-                stringJoiner.add("ROLE_" + role.getName());
+        if (!CollectionUtils.isEmpty(roles)) {
+            roles.forEach(role -> {
+                stringJoiner.add("ROLE_" + role.getRole().getName());
             });
         }
 
         return stringJoiner.toString();
     }
+
+
+
 }
