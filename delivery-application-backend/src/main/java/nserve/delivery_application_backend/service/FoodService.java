@@ -164,6 +164,8 @@ public class FoodService {
 
         List<Food> foods = foodRepository.findByRestaurant(restaurant);
 
+        foods = foods.stream().filter(food -> food.getStatus().equals("ACTIVE")).toList();
+
         return foods.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());

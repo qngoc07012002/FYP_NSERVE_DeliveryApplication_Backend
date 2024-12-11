@@ -42,8 +42,7 @@ public class RestaurantService {
    // @PreAuthorize("hasRole('CUSTOMER')")
     public List<RestaurantResponse> getAllRestaurants() {
 
-
-        return restaurantMapper.toRestaurantResponses(restaurantRepository.findAll());
+        return restaurantMapper.toRestaurantResponses(restaurantRepository.findByStatus("ONLINE"));
     }
 
     public RestaurantResponse getRestaurant() {
