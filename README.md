@@ -33,11 +33,11 @@ NSERVE Delivery Backend is the core system powering the real-time delivery and r
  cd FYP_NSERVE_DeliveryApplication_Backend
 ```
 
-2. Configure Database
+### 2. Configure Database
 ```sh
 Update application.properties with your MySQL credentials.
 ```
-3. Run the Backend Server
+### 3. Run the Backend Server
 ```sh
 mvn spring-boot:run
 ```
